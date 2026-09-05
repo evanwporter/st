@@ -18,7 +18,10 @@
 				version = "0.9.3";
 				src = self;
 
-				nativeBuildInputs = [pkgs.pkg-config];
+				nativeBuildInputs = [
+					pkgs.ncurses
+					pkgs.pkg-config
+				];
 				buildInputs = with pkgs; [
 					fontconfig
 					freetype

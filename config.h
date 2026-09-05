@@ -1,1 +1,1 @@
-/home/evanp/st/config.def.h
+config.def.h

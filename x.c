@@ -15,6 +15,11 @@
 #include <X11/Xft/Xft.h>
 #include <X11/XKBlib.h>
 #include <X11/Xcursor/Xcursor.h>
+#include <libnotify/notify.h>
+
+// Defined by libnotify/notify.h
+#undef MAX
+#undef MIN
 
 char *argv0;
 #include "arg.h"
@@ -2064,6 +2069,27 @@ xsettitle(char *p)
 	XSetWMName(xw.dpy, xw.win, &prop);
 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
 	XFree(prop.value);
+}
+
+void
+xnotify(const char *body)
+{
+    if (!notify_is_initted() && !notify_init("st"))
+        return;
+
+    NotifyNotification *n = notify_notification_new(
+        "st",
+        body,
+        // TODO: don't hardcode this path
+        "/home/evanp/.config/dunst/icons/terminal.svg"
+    );
+
+    notify_notification_show(n, NULL);
+
+    g_object_unref(G_OBJECT(n));
+    notify_uninit();
+
+    return;
 }
 
 int

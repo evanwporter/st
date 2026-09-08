@@ -79,6 +79,14 @@ typedef struct {
 
 typedef Glyph *Line;
 
+/* Cached shaped-glyph sequence for one uniformly attributed screen run. */
+typedef struct {
+	int ox;
+	int charlen;
+	int numspecs;
+	Glyph base;
+} GlyphFontSeq;
+
 typedef union {
 	int i;
 	uint ui;

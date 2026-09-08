@@ -109,6 +109,7 @@ typedef struct {
 	Window win;
 	Drawable buf;
 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+	GlyphFontSeq *specseq;
 	Atom xembed, wmdeletewin, netwmname, netwmiconname, netwmpid;
 	struct {
 		XIM xim;
@@ -780,6 +781,7 @@ xresize(int col, int row)
 
 	/* resize to new width */
 	xw.specbuf = xrealloc(xw.specbuf, col * sizeof(GlyphFontSpec) * 4);
+	xw.specseq = xrealloc(xw.specseq, col * sizeof(GlyphFontSeq));
 }
 
 ushort
@@ -1215,6 +1217,7 @@ xinit(int cols, int rows)
 
 	/* font spec buffer */
 	xw.specbuf = xmalloc(cols * sizeof(GlyphFontSpec) * 4);
+	xw.specseq = xmalloc(cols * sizeof(GlyphFontSeq));
 
 	/* Xft rendering context */
 	xw.draw = XftDrawCreate(xw.dpy, xw.buf, xw.vis, xw.cmap);
@@ -1553,12 +1556,14 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 	}
 
 	if (dmode & DRAW_FG) {
-		/* Set clip region because Xft is sometimes dirty. */
+		/* Let wide glyphs overhang their attribute run.  Backgrounds have
+		 * already been drawn for the whole line, so clipping to that run here
+		 * would cut the glyph off. */
 		r.x = 0;
 		r.y = 0;
 		r.height = win.ch;
-		r.width = width;
-		XftDrawSetClipRectangles(xw.draw, winx, winy, &r, 1);
+		r.width = win.w;
+		XftDrawSetClipRectangles(xw.draw, 0, winy, &r, 1);
 
 		/* Render glyphs. */
 		XftDrawGlyphFontSpec(xw.draw, fg, specs, len);
@@ -2101,38 +2106,50 @@ xstartdraw(void)
 void
 xdrawline(Line line, int x1, int y1, int x2)
 {
-	int i, x, ox, numspecs;
-	Glyph base, new;
+	int i, j, x, ox, numspecs;
+	Glyph new;
+	GlyphFontSeq *seq = xw.specseq;
 	XftGlyphFontSpec *specs = xw.specbuf;
 
-	/* Draw background before foreground so wide glyphs never truncate. */
-	for (int dmode = DRAW_BG; dmode <= DRAW_FG; dmode <<= 1) {
-		i = ox = 0;
-		for (x = x1; x < x2; x++) {
-			new = line[x];
-			if (new.mode == ATTR_WDUMMY)
-				continue;
-			if (selected(x, y1))
-				new.mode ^= ATTR_REVERSE;
-			if (i > 0 && ATTRCMP(base, new)) {
-				numspecs = xmakeglyphfontspecs(specs, &line[ox], x - ox,
-						ox, y1);
-				xdrawglyphfontspecs(specs, base, numspecs, ox, y1, dmode,
-						x - ox);
-				i = 0;
-			}
-			if (i == 0) {
-				ox = x;
-				base = new;
-			}
-			i++;
-		}
-		if (i > 0) {
-			numspecs = xmakeglyphfontspecs(specs, &line[ox], x2 - ox,
+	/* Draw in two passes so wide glyphs do not get truncated. Cache the
+	 * shaped specs from the background pass for the foreground pass. */
+	i = j = ox = 0;
+	for (x = x1; x < x2; x++) {
+		new = line[x];
+		if (new.mode == ATTR_WDUMMY)
+			continue;
+		if (selected(x, y1))
+			new.mode ^= ATTR_REVERSE;
+		if (i > 0 && ATTRCMP(seq[j].base, new)) {
+			numspecs = xmakeglyphfontspecs(specs, &line[ox], x - ox,
 					ox, y1);
-			xdrawglyphfontspecs(specs, base, numspecs, ox, y1, dmode,
-					x2 - ox);
+			xdrawglyphfontspecs(specs, seq[j].base, numspecs, ox, y1,
+					DRAW_BG, x - ox);
+			seq[j].charlen = x - ox;
+			seq[j++].numspecs = numspecs;
+			specs += numspecs;
+			i = 0;
 		}
+		if (i == 0) {
+			ox = x;
+			seq[j].ox = ox;
+			seq[j].base = new;
+		}
+		i++;
+	}
+	if (i > 0) {
+		numspecs = xmakeglyphfontspecs(specs, &line[ox], x2 - ox, ox, y1);
+		xdrawglyphfontspecs(specs, seq[j].base, numspecs, ox, y1, DRAW_BG,
+				x2 - ox);
+		seq[j].charlen = x2 - ox;
+		seq[j++].numspecs = numspecs;
+	}
+
+	specs = xw.specbuf;
+	for (i = 0; i < j; i++) {
+		xdrawglyphfontspecs(specs, seq[i].base, seq[i].numspecs, seq[i].ox,
+				y1, DRAW_FG, seq[i].charlen);
+		specs += seq[i].numspecs;
 	}
 }
 

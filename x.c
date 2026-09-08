@@ -17,63 +17,9 @@
 #include <X11/Xcursor/Xcursor.h>
 #include <libnotify/notify.h>
 
-// Defined by libnotify/notify.h
-#undef MAX
-#undef MIN
+#include "x.h"
 
 char *argv0;
-#include "arg.h"
-#include "st.h"
-#include "win.h"
-#include "hb.h"
-
-/* types used in config.h */
-typedef struct {
-	uint mod;
-	KeySym keysym;
-	void (*func)(const Arg *);
-	const Arg arg;
-} Shortcut;
-
-typedef struct {
-	uint mod;
-	uint button;
-	void (*func)(const Arg *);
-	const Arg arg;
-	uint  release;
-} MouseShortcut;
-
-typedef struct {
-	KeySym k;
-	uint mask;
-	char *s;
-	/* three-valued logic variables: 0 indifferent, 1 on, -1 off */
-	signed char appkey;    /* application keypad */
-	signed char appcursor; /* application cursor */
-} Key;
-
-/* Undercurl slope types */
-enum undercurl_slope_type {
-	UNDERCURL_SLOPE_ASCENDING = 0,
-	UNDERCURL_SLOPE_TOP_CAP = 1,
-	UNDERCURL_SLOPE_DESCENDING = 2,
-	UNDERCURL_SLOPE_BOTTOM_CAP = 3
-};
-
- /* X modifiers */
-#define XK_ANY_MOD    UINT_MAX
-#define XK_NO_MOD     0
-#define XK_SWITCH_MOD (1<<13|1<<14)
-
-/* function definitions used in config.h */
-static void clipcopy(const Arg *);
-static void clippaste(const Arg *);
-static void numlock(const Arg *);
-static void selpaste(const Arg *);
-static void zoom(const Arg *);
-static void zoomabs(const Arg *);
-static void zoomreset(const Arg *);
-static void ttysend(const Arg *);
 
 /* config.h for applying patches and the configuration. */
 #include "config.h"
@@ -728,9 +674,10 @@ brelease(XEvent *e)
 
 	if (mouseaction(e, 1))
 		return;
-	if (btn == Button1)
+	if (btn == Button1) {
 		mousesel(e, 1);
 		openUrlOnClick(evcol(e), evrow(e), url_opener);
+	}
 }
 
 void
@@ -1711,7 +1658,7 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 							? wh/2
 							: -wh/2
 					};
-					waveLength += ww/2;
+					waveLength += ww / 2.f;
 				}
 
 				// Last point
@@ -1721,7 +1668,7 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 						? wh/2
 						: -wh/2
 				};
-				waveLength += ww/2;
+				waveLength += ww / 2.f;
 
 				// End
 				if (waveLength < width) { // Add a bonus point?

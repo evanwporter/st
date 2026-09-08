@@ -1,3 +1,4 @@
 .direnv/
 *.o
 st
+compile_commands.json

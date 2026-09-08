@@ -1959,6 +1959,12 @@ strhandle(void)
 			if (narg > 1)
 				xsettitle(strescseq.args[1]);
 			return;
+		case 9: /* desktop notifications */
+			/* Neovim emits numeric OSC 9 control codes, e.g. OSC 9;4. */
+			if (narg > 1 &&
+			    strspn(strescseq.args[1], "0123456789") != strlen(strescseq.args[1]))
+				xnotify(strescseq.args[1]);
+			return;
 		case 52: /* manipulate selection data */
 			if (narg > 2 && allowwindowops) {
 				dec = base64dec(strescseq.args[2]);

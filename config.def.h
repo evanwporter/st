@@ -1,4 +1,13 @@
 /* See LICENSE file for copyright and license details. */
+#ifndef ST_CONFIG_H
+#define ST_CONFIG_H
+
+#include "st.h"
+#include "x.h"
+
+#include <wchar.h>
+#include <X11/keysym.h>
+#include <libnotify/notify.h>
 
 /*
  * appearance
@@ -476,3 +485,5 @@ static char ascii_printable[] =
 
 /* URL Opener */
 static char *url_opener = "xdg-open";
+
+#endif // ST_CONFIG_H

@@ -1,5 +1,11 @@
 /* See LICENSE for license details. */
 
+#ifndef ST_H
+#define ST_H
+
+#include <wchar.h>
+#include <X11/Xft/Xft.h>
+
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -144,3 +150,5 @@ extern unsigned int tabspaces;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
 extern unsigned int defaultcs;
+
+#endif // ST_H

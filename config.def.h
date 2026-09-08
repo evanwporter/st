@@ -471,3 +471,12 @@ static char ascii_printable[] =
 	" !\"#$%&'()*+,-./0123456789:;<=>?"
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
+
+/** Undercurl style. */
+#define UNDERCURL_CURLY 0
+#define UNDERCURL_SPIKY 1
+#define UNDERCURL_CAPPED 2
+#define UNDERCURL_STYLE UNDERCURL_SPIKY
+
+/* URL Opener */
+static char *url_opener = "xdg-open";

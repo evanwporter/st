@@ -1,3 +1,6 @@
+#ifndef ST_HB_H
+#define ST_HB_H
+
 #include <X11/Xft/Xft.h>
 #include <hb.h>
 #include <hb-ft.h>
@@ -13,3 +16,5 @@ void hbcreatebuffer(void);
 void hbdestroybuffer(void);
 void hbunloadfonts(void);
 void hbtransform(HbTransformData *, XftFont *, const Glyph *, int, int);
+
+#endif // ST_HB_H

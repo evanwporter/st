@@ -118,6 +118,8 @@ void *xmalloc(size_t);
 void *xrealloc(void *, size_t);
 char *xstrdup(const char *);
 
+void openUrlOnClick(int, int, char *);
+
 /* config.h globals */
 extern char *utmp;
 extern char *scroll;

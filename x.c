@@ -715,6 +715,7 @@ brelease(XEvent *e)
 		return;
 	if (btn == Button1)
 		mousesel(e, 1);
+		openUrlOnClick(evcol(e), evrow(e), url_opener);
 }
 
 void

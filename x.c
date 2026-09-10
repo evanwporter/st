@@ -18,6 +18,10 @@
 #include <libnotify/notify.h>
 
 #include "x.h"
+#include "arg.h"
+#include "st.h"
+#include "win.h"
+#include "hb.h"
 
 char *argv0;
 

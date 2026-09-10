@@ -4,6 +4,7 @@
 #define ST_H
 
 #include <wchar.h>
+#include <X11/Xft/Xft.h>
 
 #include <stdint.h>
 #include <sys/types.h>

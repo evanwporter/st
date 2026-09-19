@@ -4,6 +4,7 @@
 
 #include "st.h"
 #include "x.h"
+#include "palette.h"
 
 #include <wchar.h>
 #include <X11/keysym.h>
@@ -105,32 +106,32 @@ unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#665c54", /* black */
-	"#ea6962", /* red */
-	"#a9b665", /* green */
-	"#e78a4e", /* yellow */
-	"#7daea3", /* blue */
-	"#d3869b", /* magenta */
-	"#89b482", /* cyan */
-	"#d4be98", /* white */
+	ST_BLACK, /* black */
+	ST_RED, /* red */
+	ST_GREEN, /* green */
+	ST_YELLOW, /* yellow */
+	ST_BLUE, /* blue */
+	ST_MAGENTA, /* magenta */
+	ST_CYAN, /* cyan */
+	ST_WHITE, /* white */
 
 	/* 8 bright colors */
-	"#928374", /* black */
-	"#ea6962", /* red */
-	"#a9b665", /* green */
-	"#d8a657", /* yellow */
-	"#7daea3", /* blue */
-	"#d3869b", /* magenta */
-	"#89b482", /* cyan */
-	"#d4be98", /* white */
+	ST_BRIGHT_BLACK, /* black */
+	ST_RED, /* red */
+	ST_GREEN, /* green */
+	ST_BRIGHT_YELLOW, /* yellow */
+	ST_BLUE, /* blue */
+	ST_MAGENTA, /* magenta */
+	ST_CYAN, /* cyan */
+	ST_WHITE, /* white */
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#a89984", /* 256 -> cursor */
-	"#282828", /* 257 -> cursor text */
-	"#282828", /* 258 -> bg */
-	"#d4be98", /* 259 -> fg */
+	ST_CURSOR, /* 256 -> cursor */
+	ST_CURSOR_TEXT, /* 257 -> cursor text */
+	ST_BG, /* 258 -> bg */
+	ST_FG, /* 259 -> fg */
 };
 
 /*

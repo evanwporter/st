@@ -19,7 +19,7 @@ st.o: config.h st.h win.h
 x.o: arg.h config.h st.h win.h hb.h x.h
 hb.o: st.h
 
-$(OBJ): config.h config.mk
+$(OBJ): config.h config.mk palette.h
 
 st: $(OBJ)
 	$(CC) -o $@ $(OBJ) $(STLDFLAGS)
